@@ -130,10 +130,12 @@ class Scanner():
             classe = "?"
             tipo = "nulo"
             while (c := ler_caractere()):
-                # print(c)
                 new_lexema = lexema + c
                 
                 test_lexema = replace_letters_and_digits(new_lexema)
+                if state.name == estadoNum or state.name == estadoNumPonto:
+                    if c == "e" or c == "E":
+                        test_lexema = replace_letters_and_digits(lexema)+c
                 
                 accepts, transitioned, state = dfa.accepts(test_lexema)
 
