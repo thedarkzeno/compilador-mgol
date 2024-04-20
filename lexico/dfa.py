@@ -28,9 +28,13 @@ class DFA:
         current_state = self.initial_state
         for symbol in string:
             if symbol in current_state.transitions:
+                
                 current_state = current_state.transitions[symbol]
             else:
-                return False, False, current_state
+                if transicao_curinga in current_state.transitions:
+                    current_state = current_state.transitions[transicao_curinga]
+                else:
+                    return False, False, current_state
         return current_state in self.accept_states, True, current_state
 
 estadoInicial = "q0"
@@ -62,6 +66,7 @@ estadoFCP = "q18"
 estadoVIR = "q19"
 estadoPTV = "q20"
 
+transicao_curinga = "#"
 
 dfa = DFA()
 dfa.add_state(estadoInicial, is_final=False)  
@@ -126,11 +131,11 @@ dfa.add_transition(estadoId, 'D', estadoId)
 dfa.add_transition(estadoId, '_', estadoId)
 
 dfa.add_transition(estadoInicial, '"', estadoLiteral)
-dfa.add_transition(estadoLiteral, '.', estadoLiteral)
+dfa.add_transition(estadoLiteral, transicao_curinga, estadoLiteral)
 dfa.add_transition(estadoLiteral, '"', estadoLiteralFinal)
 
 dfa.add_transition(estadoInicial, '{', estadoComentario)
-dfa.add_transition(estadoComentario, '.', estadoComentario)
+dfa.add_transition(estadoComentario, transicao_curinga, estadoComentario)
 dfa.add_transition(estadoComentario, '}', estadoComentarioFinal)
 
 dfa.add_transition(estadoInicial, 'EOF', estadoEOF)
@@ -154,9 +159,6 @@ dfa.add_transition(estadoInicial, ';', estadoPTV)
 dfa.add_transition(estadoInicial, ',', estadoVIR)
 
 
-# Testando o DFA
-print(dfa.accepts("DD-D"))  # Deve retornar False
-print(dfa.accepts("D.De"))  # Deve retornar False
-print(dfa.accepts("D.DDE-D"))   # Deve retornar True
-
-print(dfa.accepts("LL"))   # Deve retornar True
+if __name__ == "__main__":
+    print(dfa.accepts('"LLL'))
+    print(dfa.accepts('"LLL"'))

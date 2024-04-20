@@ -1,4 +1,4 @@
-from dfa import *
+from .dfa import *
 
 class Token:
     def __init__(self, classe, lexema, tipo):
@@ -10,47 +10,22 @@ class Token:
         return f"Classe: {self.classe}, Lexema: '{self.lexema}', Tipo: {self.tipo}"
 
 palavras_reservadas = {
-    "inicio": Token("inicio", "inicio", None),
-    "varinicio": Token("varinicio", "varinicio", None),
-    "varfim": Token("varfim", "varfim", None),
-    "escreva": Token("escreva", "escreva", None),
-    "leia": Token("leia", "leia", None),
-    "se": Token("se", "se", None),
-    "entao": Token("entao", "entao", None),
-    "fimse": Token("fimse", "fimse", None),
-    "repita": Token("repita", "repita", None),
-    "fimrepita": Token("fimrepita", "fimrepita", None),
-    "fim": Token("fim", "fim", None),
+    "inicio": Token("inicio", "inicio", "inicio"),
+    "varinicio": Token("varinicio", "varinicio", "varinicio"),
+    "varfim": Token("varfim", "varfim", "varfim"),
+    "escreva": Token("escreva", "escreva", "escreva"),
+    "leia": Token("leia", "leia", "leia"),
+    "se": Token("se", "se", "se"),
+    "entao": Token("entao", "entao", "entao"),
+    "fimse": Token("fimse", "fimse", "fimse"),
+    "repita": Token("repita", "repita", "repita"),
+    "fimrepita": Token("fimrepita", "fimrepita", "fimrepita"),
+    "fim": Token("fim", "fim", "fim"),
     "inteiro": Token("inteiro", "inteiro", "inteiro"),
     "literal": Token("literal", "literal", "literal"),
     "real": Token("real", "real", "real"),
 }
 
-# def busca_tabela(lexema):
-#     return palavras_reservadas.get(lexema)
-
-# def inserir_tabela(token):
-#     if token.classe == "id":
-#         palavras_reservadas[token.lexema] = token
-
-
-# def replace_letters_and_digits(s):
-#     # Create an empty result string
-#     result = ''
-    
-#     # Iterate over each character in the input string
-#     for char in s:
-#         # Check if the character is a lowercase letter
-#         if char.isalpha():
-#             result += 'L'
-#         # Check if the character is a digit
-#         elif char.isdigit():
-#             result += 'D'
-#         # If neither, append the character as it is
-#         else:
-#             result += char
-            
-#     return result
 
 def replace_letters_and_digits(s):
     result = ''
@@ -59,19 +34,15 @@ def replace_letters_and_digits(s):
     i = 0
     while i < length:
         char = s[i]
-        # Checa se é uma letra
         if char.isalpha():
-            # Verifica se é um 'e' ou 'E' que faz parte de uma notação científica
             if (char in 'eE' and
                 i > 0 and s[i-1].isdigit() and
                 i+1 < length and (s[i+1].isdigit() or s[i+1] in '+-')):
-                result += 'e'  # Mantém 'e' para notação científica
+                result += 'e'
                 i += 1
-                # Pular o próximo caractere se for sinal, pois faz parte da notação
                 if s[i] in '+-':
                     result += s[i]
                     i += 1
-                    # Continua para adicionar dígitos após o sinal
                     while i < length and s[i].isdigit():
                         result += 'D'
                         i += 1
@@ -86,6 +57,40 @@ def replace_letters_and_digits(s):
 
     return result
 
+def get_classe(state):
+    classe = "?"
+    if state.name == estadoLiteralFinal:
+        classe = "Literal"
+    elif state.name == estadoId:
+        classe = "ID"
+    elif state.name == estadoNum:
+        classe = "Num"
+    elif state.name == estadoNumPonto:
+        classe = "Num"
+    elif state.name == estadoNumExpoenteFinal:
+        classe = "Num"
+    elif state.name == estadoComentarioFinal:
+        classe = "Comentario"
+    elif state.name == estadoOPRFinal:
+        classe = "OPR"
+    elif state.name == estadoOPRMenor:
+        classe = "OPR"
+    elif state.name == estadoOPRMaior:
+        classe = "OPR"
+    elif state.name == estadoRCB:
+        classe = "RCB"
+    elif state.name == estadoOPM:
+        classe = "OPM"
+    elif state.name == estadoABP:
+        classe = "ABP"
+    elif state.name == estadoFCP:
+        classe = "FCP"
+    elif state.name == estadoVIR:
+        classe = "VIR"
+    elif state.name == estadoPTV:
+        classe = "PTV"
+
+    return classe
 
 class Scanner():
     def __init__(self):
@@ -108,27 +113,25 @@ class Scanner():
         while True:
             c = ler_caractere()
             if c is None:
-                break  # Fim do arquivo
+                break
 
-            # Ignora espaços e gerencia quebras de linha
             if c.isspace():
                 if c == '\n':
                     self.linha += 1
                     self.coluna = 1
                 continue
 
-            # Inicializa o lexema com o primeiro caractere
             lexema = c
             
             accepts, transitioned, state = dfa.accepts(replace_letters_and_digits(lexema))
             
             if not accepts:
-                print(f"ERRO LÉXICO: Sequência de números inválida '{lexema}' na linha {self.linha}, coluna {self.coluna}")
-                return Token("ERRO", lexema, "NULO")
+                if transitioned == False:
+                    print(f"ERRO LÉXICO: Sequência de números inválida '{lexema}' na linha {self.linha}, coluna {self.coluna}")
+                    return Token("ERRO", lexema, "Nulo")
 
-            # Identifica números (inteiros simples)
             classe = "?"
-            tipo = "nulo"
+            tipo = "Nulo"
             while (c := ler_caractere()):
                 new_lexema = lexema + c
                 
@@ -145,13 +148,19 @@ class Scanner():
                         self.coluna -= 1
                         
                         if state.name == estadoId:
-                            token = self.tabela_de_simbolos.get(lexema, Token("ID", lexema, "nulo"))
+                            token = self.tabela_de_simbolos.get(lexema, Token("ID", lexema, tipo))
                             if token.classe == "ID":
                                 self.tabela_de_simbolos[token.lexema] = token
                             return token
+                        classe = get_classe(state)
                         return Token(classe, lexema, tipo)
                 lexema = new_lexema
-            return Token(classe, lexema, tipo)
+            classe = get_classe(state)
+            if classe == "ID":
+                token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
+                if token.classe == "ID":
+                                self.tabela_de_simbolos[token.lexema] = token
+            return token
 
-        return Token("EOF", "EOF", "NULO")
+        return Token("EOF", "EOF", "EOF")
 
