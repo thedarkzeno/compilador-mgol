@@ -147,7 +147,8 @@ class Scanner():
                         self.pos -= 1
                         self.coluna -= 1
                         
-                        if state.name == estadoId:
+                        classe = get_classe(state)
+                        if classe == "ID":
                             token = self.tabela_de_simbolos.get(lexema, Token("ID", lexema, tipo))
                             if token.classe == "ID":
                                 self.tabela_de_simbolos[token.lexema] = token
@@ -159,7 +160,7 @@ class Scanner():
             if classe == "ID":
                 token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
                 if token.classe == "ID":
-                                self.tabela_de_simbolos[token.lexema] = token
+                    self.tabela_de_simbolos[token.lexema] = token
             return token
 
         return Token("EOF", "EOF", "EOF")
