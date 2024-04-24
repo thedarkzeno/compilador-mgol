@@ -98,6 +98,10 @@ def get_tipo(state):
         tipo = "inteiro"
     elif state.name in [estadoNumPonto, estadoNumExpoente1, estadoNumExpoente2, estadoNumExpoenteFinal]:
         tipo = "real"
+    elif state.name == estadoLiteralFinal:
+        tipo = "literal"
+    elif state.name == estadoComentarioFinal:
+        tipo = "comentario"
     return tipo
 
 
