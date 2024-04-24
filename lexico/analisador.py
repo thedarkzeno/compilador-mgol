@@ -94,9 +94,9 @@ def get_classe(state):
 
 def get_tipo(state):
     tipo = "Nulo"
-    if state == estadoNum:
+    if state.name == estadoNum:
         tipo = "inteiro"
-    elif state in [estadoNumPonto, estadoNumExpoente1, estadoNumExpoente2, estadoNumExpoenteFinal]:
+    elif state.name in [estadoNumPonto, estadoNumExpoente1, estadoNumExpoente2, estadoNumExpoenteFinal]:
         tipo = "real"
     return tipo
 
