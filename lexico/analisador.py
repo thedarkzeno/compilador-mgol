@@ -92,6 +92,15 @@ def get_classe(state):
 
     return classe
 
+def get_tipo(state):
+    tipo = "Nulo"
+    if state == estadoNum:
+        tipo = "inteiro"
+    elif state in [estadoNumPonto, estadoNumExpoente1, estadoNumExpoente2, estadoNumExpoenteFinal]:
+        tipo = "real"
+    return tipo
+
+
 class Scanner():
     def __init__(self):
         self.name = "scanner"
@@ -99,6 +108,14 @@ class Scanner():
         self.linha = 0
         self.coluna = 0
         self.tabela_de_simbolos = palavras_reservadas
+    
+    def get_token(self, lexema, state):
+        classe = get_classe(state)
+        tipo = get_tipo(state)
+        token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
+        if token.classe == "ID":
+            self.tabela_de_simbolos[token.lexema] = token
+        return token
     
     def scanner(self, codigo_fonte):
         def ler_caractere():
@@ -130,15 +147,14 @@ class Scanner():
                     print(f"ERRO LÉXICO: Sequência de números inválida '{lexema}' na linha {self.linha}, coluna {self.coluna}")
                     return Token("ERRO", lexema, "Nulo")
 
-            classe = "?"
-            tipo = "Nulo"
+            
             while (c := ler_caractere()):
                 new_lexema = lexema + c
                 
                 test_lexema = replace_letters_and_digits(new_lexema)
                 if state.name == estadoNum or state.name == estadoNumPonto:
                     if c == "e" or c == "E":
-                        test_lexema = replace_letters_and_digits(lexema)+c
+                        test_lexema = replace_letters_and_digits(lexema) + c
                 
                 accepts, transitioned, state = dfa.accepts(test_lexema)
 
@@ -147,20 +163,11 @@ class Scanner():
                         self.pos -= 1
                         self.coluna -= 1
                         
-                        classe = get_classe(state)
-                        if classe == "ID":
-                            token = self.tabela_de_simbolos.get(lexema, Token("ID", lexema, tipo))
-                            if token.classe == "ID":
-                                self.tabela_de_simbolos[token.lexema] = token
-                            return token
-                        classe = get_classe(state)
-                        return Token(classe, lexema, tipo)
+                        token = self.get_token(lexema, state)
+                        return token
+
                 lexema = new_lexema
-            classe = get_classe(state)
-            if classe == "ID":
-                token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
-                if token.classe == "ID":
-                    self.tabela_de_simbolos[token.lexema] = token
+            token = self.get_token(lexema, state)
             return token
 
         return Token("EOF", "EOF", "EOF")
