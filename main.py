@@ -13,7 +13,3 @@ while True:
     
     print(token)
 
-# Opcional: exibir a tabela de símbolos final, para ver a adição dos IDs
-# print("\nTabela de símbolos final:\n")
-# for i in scanner.tabela_de_simbolos:
-#     print(f"{i}: {scanner.tabela_de_simbolos[i]}")

@@ -59,48 +59,48 @@ def replace_letters_and_digits(s):
 
 def get_classe(state):
     classe = "?"
-    if state.name == estadoLiteralFinal:
+    if state.name == stateLiteralFinal:
         classe = "Literal"
-    elif state.name == estadoId:
+    elif state.name == stateId:
         classe = "ID"
-    elif state.name == estadoNum:
+    elif state.name == stateNum:
         classe = "Num"
-    elif state.name == estadoNumPonto:
+    elif state.name == stateNumPonto:
         classe = "Num"
-    elif state.name == estadoNumExpoenteFinal:
+    elif state.name == stateNumExpoenteFinal:
         classe = "Num"
-    elif state.name == estadoComentarioFinal:
+    elif state.name == stateComentarioFinal:
         classe = "Comentario"
-    elif state.name == estadoOPRFinal:
+    elif state.name == stateOPRFinal:
         classe = "OPR"
-    elif state.name == estadoOPRMenor:
+    elif state.name == stateOPRMenor:
         classe = "OPR"
-    elif state.name == estadoOPRMaior:
+    elif state.name == stateOPRMaior:
         classe = "OPR"
-    elif state.name == estadoRCB:
+    elif state.name == stateRCB:
         classe = "RCB"
-    elif state.name == estadoOPM:
+    elif state.name == stateOPM:
         classe = "OPM"
-    elif state.name == estadoABP:
+    elif state.name == stateABP:
         classe = "ABP"
-    elif state.name == estadoFCP:
+    elif state.name == stateFCP:
         classe = "FCP"
-    elif state.name == estadoVIR:
+    elif state.name == stateVIR:
         classe = "VIR"
-    elif state.name == estadoPTV:
+    elif state.name == statePTV:
         classe = "PTV"
 
     return classe
 
 def get_tipo(state):
     tipo = "Nulo"
-    if state.name == estadoNum:
+    if state.name == stateNum:
         tipo = "inteiro"
-    elif state.name in [estadoNumPonto, estadoNumExpoente1, estadoNumExpoente2, estadoNumExpoenteFinal]:
+    elif state.name in [stateNumPonto, stateNumExpoente1, stateNumExpoente2, stateNumExpoenteFinal]:
         tipo = "real"
-    elif state.name == estadoLiteralFinal:
+    elif state.name == stateLiteralFinal:
         tipo = "literal"
-    elif state.name == estadoComentarioFinal:
+    elif state.name == stateComentarioFinal:
         tipo = "comentario"
     return tipo
 
@@ -156,7 +156,7 @@ class Scanner():
                 new_lexema = lexema + c
                 
                 test_lexema = replace_letters_and_digits(new_lexema)
-                if state.name == estadoNum or state.name == estadoNumPonto:
+                if state.name == stateNum or state.name == stateNumPonto:
                     if c == "e" or c == "E":
                         test_lexema = replace_letters_and_digits(lexema) + c
                 
