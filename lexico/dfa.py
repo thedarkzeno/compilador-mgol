@@ -1,3 +1,5 @@
+import string
+
 class State:
     def __init__(self, name):
         self.name = name
@@ -105,28 +107,41 @@ dfa.add_state(statePTV, is_final=True)
 
 dfa.set_initial_state(stateInicial)
 
-dfa.add_transition(stateInicial, 'D', stateNum)
-dfa.add_transition(stateInicial, 'L', stateId)
+for digit in '0123456789':
+    dfa.add_transition(stateInicial, digit, stateNum)
 
-dfa.add_transition(stateNum, 'D', stateNum)
+for letter in string.ascii_letters:
+    dfa.add_transition(stateInicial, letter, stateId)
+
+for digit in '0123456789':
+    dfa.add_transition(stateNum, digit, stateNum)
 dfa.add_transition(stateNum, '.', stateNumPonto)
 dfa.add_transition(stateNum, 'E', stateNumExpoente1)
 dfa.add_transition(stateNum, 'e', stateNumExpoente1)
 
-dfa.add_transition(stateNumPonto, 'D', stateNumPonto)
+
+for digit in '0123456789':
+    dfa.add_transition(stateNumPonto, digit, stateNumPonto)
 dfa.add_transition(stateNumPonto, 'E', stateNumExpoente1)
 dfa.add_transition(stateNumPonto, 'e', stateNumExpoente1)
 
-dfa.add_transition(stateNumExpoente1, 'D', stateNumExpoenteFinal)
+
+for digit in '0123456789':
+    dfa.add_transition(stateNumExpoente1, digit, stateNumExpoenteFinal)
 dfa.add_transition(stateNumExpoente1, '+', stateNumExpoente2)
 dfa.add_transition(stateNumExpoente1, '-', stateNumExpoente2)
 
-dfa.add_transition(stateNumExpoente2, 'D', stateNumExpoenteFinal)
+for digit in '0123456789':
+    dfa.add_transition(stateNumExpoente2, digit, stateNumExpoenteFinal)
 
-dfa.add_transition(stateNumExpoenteFinal, 'D', stateNumExpoenteFinal)
+for digit in '0123456789':
+    dfa.add_transition(stateNumExpoenteFinal, digit, stateNumExpoenteFinal)
 
-dfa.add_transition(stateId, 'L', stateId)
-dfa.add_transition(stateId, 'D', stateId)
+
+for letter in string.ascii_letters:
+    dfa.add_transition(stateId, letter, stateId)
+for digit in '0123456789':
+    dfa.add_transition(stateId, digit, stateId)
 dfa.add_transition(stateId, '_', stateId)
 
 dfa.add_transition(stateInicial, '"', stateLiteral)

@@ -27,36 +27,6 @@ palavras_reservadas = {
 }
 
 
-def replace_letters_and_digits(s):
-    result = ''
-    length = len(s)
-
-    i = 0
-    while i < length:
-        char = s[i]
-        if char.isalpha():
-            if (char in 'eE' and
-                i > 0 and s[i-1].isdigit() and
-                i+1 < length and (s[i+1].isdigit() or s[i+1] in '+-')):
-                result += 'e'
-                i += 1
-                if s[i] in '+-':
-                    result += s[i]
-                    i += 1
-                    while i < length and s[i].isdigit():
-                        result += 'D'
-                        i += 1
-                    continue
-            else:
-                result += 'L'
-        elif char.isdigit():
-            result += 'D'
-        else:
-            result += char
-        i += 1
-
-    return result
-
 def get_classe(state):
     classe = "?"
     if state.name == stateLiteralFinal:
@@ -144,7 +114,7 @@ class Scanner():
 
             lexema = c
             
-            accepts, transitioned, state = dfa.accepts(replace_letters_and_digits(lexema))
+            accepts, transitioned, state = dfa.accepts(lexema)
             
             if not accepts:
                 if transitioned == False:
@@ -153,14 +123,9 @@ class Scanner():
 
             
             while (c := ler_caractere()):
-                new_lexema = lexema + c
+                new_lexema = lexema + c                
                 
-                test_lexema = replace_letters_and_digits(new_lexema)
-                if state.name == stateNum or state.name == stateNumPonto:
-                    if c == "e" or c == "E":
-                        test_lexema = replace_letters_and_digits(lexema) + c
-                
-                accepts, transitioned, state = dfa.accepts(test_lexema)
+                accepts, transitioned, state = dfa.accepts(new_lexema)
 
                 if not accepts:
                     if transitioned == False:
