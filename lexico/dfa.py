@@ -171,8 +171,3 @@ dfa.add_transition(stateInicial, '(', stateABP)
 dfa.add_transition(stateInicial, ')', stateFCP)
 dfa.add_transition(stateInicial, ';', statePTV)
 dfa.add_transition(stateInicial, ',', stateVIR)
-
-
-if __name__ == "__main__":
-    print(dfa.accepts('"LLL'))
-    print(dfa.accepts('"LLL"'))
