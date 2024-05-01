@@ -119,7 +119,7 @@ class Scanner():
             if not accepts:
                 if transitioned == False:
                     print(f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}")
-                    return Token("ERRO", "Nulo", "Nulo")
+                    return Token("ERRO", lexema, "Nulo")
 
             
             while (c := ler_caractere()):
