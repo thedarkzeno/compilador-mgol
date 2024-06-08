@@ -136,8 +136,14 @@ class Scanner():
                         return token
 
                 lexema = new_lexema
-            token = self.get_token(lexema, state)
-            return token
+            
+            accepts, transitioned, state = dfa.accepts(lexema)
+            if accepts:
+                token = self.get_token(lexema, state)
+                return token
+            else:
+                print(f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}")
+                return Token("ERRO", lexema, "Nulo")
 
         return Token("EOF", "EOF", "EOF")
 
