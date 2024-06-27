@@ -7,6 +7,7 @@ def build_slr_table(states, transitions, rules, first, follow):
     for state_idx, state in enumerate(states):
         for item in state:
             if item.dot_position == len(item.rhs):
+                # Handle reductions and accept
                 if item.lhs == list(rules.keys())[0] and item.rhs == rules[item.lhs][0]:
                     action_table[state_idx]['$'] = 'accept'
                 else:
@@ -15,10 +16,11 @@ def build_slr_table(states, transitions, rules, first, follow):
                             action_table[state_idx][terminal] = f"reduce {item.lhs} -> {' '.join(item.rhs)}"
             else:
                 symbol = item.rhs[item.dot_position]
-                if symbol in rules:
-                    goto_table[state_idx][symbol] = transitions.get((state_idx, symbol))
-                else:
-                    next_state = transitions.get((state_idx, symbol))
+                next_state = transitions.get((state_idx, symbol))
+                if symbol in rules:  # Non-terminal
+                    if next_state is not None:
+                        goto_table[state_idx][symbol] = next_state
+                else:  # Terminal
                     if next_state is not None:
                         action_table[state_idx][symbol] = f"shift {next_state}"
 

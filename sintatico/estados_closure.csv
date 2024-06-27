@@ -1,0 +1,78 @@
+estado,closure
+0,P' -> .P; P -> .inicio V A
+1,P' -> P.
+2,P -> inicio.V A; V -> .varinicio LV
+3,P -> inicio V.A; A -> .ES A; A -> .CMD A; A -> .COND A; A -> .R A; A -> .fim; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; R -> .CABR CPR; CAB -> .se ab_p EXP_R fc_p então; CABR -> .repita ab_p EXP_R fc_p
+4,V -> varinicio.LV; LV -> .D LV; LV -> .varfim pt_v; D -> .TIPO L pt_v; TIPO -> .inteiro; TIPO -> .real; TIPO -> .literal
+5,P -> inicio V A.
+6,A -> ES.A; A -> .ES A; A -> .CMD A; A -> .COND A; A -> .R A; A -> .fim; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; R -> .CABR CPR; CAB -> .se ab_p EXP_R fc_p então; CABR -> .repita ab_p EXP_R fc_p
+7,A -> CMD.A; A -> .ES A; A -> .CMD A; A -> .COND A; A -> .R A; A -> .fim; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; R -> .CABR CPR; CAB -> .se ab_p EXP_R fc_p então; CABR -> .repita ab_p EXP_R fc_p
+8,A -> COND.A; A -> .ES A; A -> .CMD A; A -> .COND A; A -> .R A; A -> .fim; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; R -> .CABR CPR; CAB -> .se ab_p EXP_R fc_p então; CABR -> .repita ab_p EXP_R fc_p
+9,A -> R.A; A -> .ES A; A -> .CMD A; A -> .COND A; A -> .R A; A -> .fim; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; R -> .CABR CPR; CAB -> .se ab_p EXP_R fc_p então; CABR -> .repita ab_p EXP_R fc_p
+10,A -> fim.
+11,ES -> leia.id pt_v
+12,ES -> escreva.ARG pt_v; ARG -> .lit; ARG -> .num; ARG -> .id
+13,CMD -> id.rcb LD pt_v
+14,COND -> CAB.CP; CP -> .ES CP; CP -> .CMD CP; CP -> .COND CP; CP -> .fimse; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+15,R -> CABR.CPR; CPR -> .ES CPR; CPR -> .CMD CPR; CPR -> .COND CPR; CPR -> .fimrepita; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+16,CAB -> se.ab_p EXP_R fc_p então
+17,CABR -> repita.ab_p EXP_R fc_p
+18,V -> varinicio LV.
+19,LV -> D.LV; LV -> .D LV; LV -> .varfim pt_v; D -> .TIPO L pt_v; TIPO -> .inteiro; TIPO -> .real; TIPO -> .literal
+20,LV -> varfim.pt_v
+21,D -> TIPO.L pt_v; L -> .id vir L; L -> .id
+22,TIPO -> inteiro.
+23,TIPO -> real.
+24,TIPO -> literal.
+25,A -> ES A.
+26,A -> CMD A.
+27,A -> COND A.
+28,A -> R A.
+29,ES -> leia id.pt_v
+30,ES -> escreva ARG.pt_v
+31,ARG -> lit.
+32,ARG -> num.
+33,ARG -> id.
+34,CMD -> id rcb.LD pt_v; LD -> .OPRD opm OPRD; LD -> .OPRD; OPRD -> .id; OPRD -> .num
+35,COND -> CAB CP.
+36,CP -> ES.CP; CP -> .ES CP; CP -> .CMD CP; CP -> .COND CP; CP -> .fimse; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+37,CP -> CMD.CP; CP -> .ES CP; CP -> .CMD CP; CP -> .COND CP; CP -> .fimse; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+38,CP -> COND.CP; CP -> .ES CP; CP -> .CMD CP; CP -> .COND CP; CP -> .fimse; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+39,CP -> fimse.
+40,R -> CABR CPR.
+41,CPR -> ES.CPR; CPR -> .ES CPR; CPR -> .CMD CPR; CPR -> .COND CPR; CPR -> .fimrepita; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+42,CPR -> CMD.CPR; CPR -> .ES CPR; CPR -> .CMD CPR; CPR -> .COND CPR; CPR -> .fimrepita; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+43,CPR -> COND.CPR; CPR -> .ES CPR; CPR -> .CMD CPR; CPR -> .COND CPR; CPR -> .fimrepita; ES -> .leia id pt_v; ES -> .escreva ARG pt_v; CMD -> .id rcb LD pt_v; COND -> .CAB CP; CAB -> .se ab_p EXP_R fc_p então
+44,CPR -> fimrepita.
+45,CAB -> se ab_p.EXP_R fc_p então; EXP_R -> .OPRD opr OPRD; OPRD -> .id; OPRD -> .num
+46,CABR -> repita ab_p.EXP_R fc_p; EXP_R -> .OPRD opr OPRD; OPRD -> .id; OPRD -> .num
+47,LV -> D LV.
+48,LV -> varfim pt_v.
+49,D -> TIPO L.pt_v
+50,L -> id.vir L; L -> id.
+51,ES -> leia id pt_v.
+52,ES -> escreva ARG pt_v.
+53,CMD -> id rcb LD.pt_v
+54,LD -> OPRD.opm OPRD; LD -> OPRD.
+55,OPRD -> id.
+56,OPRD -> num.
+57,CP -> ES CP.
+58,CP -> CMD CP.
+59,CP -> COND CP.
+60,CPR -> ES CPR.
+61,CPR -> CMD CPR.
+62,CPR -> COND CPR.
+63,CAB -> se ab_p EXP_R.fc_p então
+64,EXP_R -> OPRD.opr OPRD
+65,CABR -> repita ab_p EXP_R.fc_p
+66,D -> TIPO L pt_v.
+67,L -> id vir.L; L -> .id vir L; L -> .id
+68,CMD -> id rcb LD pt_v.
+69,LD -> OPRD opm.OPRD; OPRD -> .id; OPRD -> .num
+70,CAB -> se ab_p EXP_R fc_p.então
+71,EXP_R -> OPRD opr.OPRD; OPRD -> .id; OPRD -> .num
+72,CABR -> repita ab_p EXP_R fc_p.
+73,L -> id vir L.
+74,LD -> OPRD opm OPRD.
+75,CAB -> se ab_p EXP_R fc_p então.
+76,EXP_R -> OPRD opr OPRD.

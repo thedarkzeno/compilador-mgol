@@ -30,35 +30,35 @@ palavras_reservadas = {
 def get_classe(state):
     classe = "?"
     if state.name == stateLiteralFinal:
-        classe = "Literal"
+        classe = "lit"
     elif state.name == stateId:
-        classe = "ID"
+        classe = "id"
     elif state.name == stateNum:
-        classe = "Num"
+        classe = "num"
     elif state.name == stateNumPonto:
-        classe = "Num"
+        classe = "num"
     elif state.name == stateNumExpoenteFinal:
-        classe = "Num"
+        classe = "num"
     elif state.name == stateComentarioFinal:
         classe = "Comentario"
     elif state.name == stateOPRFinal:
-        classe = "OPR"
+        classe = "opr"
     elif state.name == stateOPRMenor:
-        classe = "OPR"
+        classe = "opr"
     elif state.name == stateOPRMaior:
-        classe = "OPR"
+        classe = "opr"
     elif state.name == stateRCB:
-        classe = "RCB"
+        classe = "rcb"
     elif state.name == stateOPM:
-        classe = "OPM"
+        classe = "opm"
     elif state.name == stateABP:
-        classe = "ABP"
+        classe = "ab_p"
     elif state.name == stateFCP:
-        classe = "FCP"
+        classe = "fc_p"
     elif state.name == stateVIR:
-        classe = "VIR"
+        classe = "vir"
     elif state.name == statePTV:
-        classe = "PTV"
+        classe = "pt_v"
 
     return classe
 
@@ -69,7 +69,7 @@ def get_tipo(state):
     elif state.name in [stateNumPonto, stateNumExpoente1, stateNumExpoente2, stateNumExpoenteFinal]:
         tipo = "real"
     elif state.name == stateLiteralFinal:
-        tipo = "literal"
+        tipo = "lit"
     elif state.name == stateComentarioFinal:
         tipo = "comentario"
     return tipo
@@ -87,7 +87,7 @@ class Scanner():
         classe = get_classe(state)
         tipo = get_tipo(state)
         token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
-        if token.classe == "ID":
+        if token.classe == "id":
             self.tabela_de_simbolos[token.lexema] = token
         return token
     

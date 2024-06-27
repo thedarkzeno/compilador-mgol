@@ -1,13 +1,11 @@
 inicio
 varinicio
-literal A,B;
-inteiro B;
-inteiro D;
-real C ;
+literal A;
+inteiro B, D, E;
+real C;
 varfim;
 escreva "Digite B:";
 leia B;
-{comentario} 
 escreva "Digite A:";
 leia A;
 se(B>2)
@@ -33,5 +31,4 @@ escreva "\n";
 escreva C;
 escreva "\n";
 escreva A;
-@
 fim
