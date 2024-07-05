@@ -2,7 +2,7 @@ import pandas as pd
 from collections import defaultdict
 
 
-# df = pd.read_csv("gramatica.csv")
+df = pd.read_csv("sintatico/gramatica.csv")
 
 # Função para extrair as regras gramaticais em forma de dicionário
 def get_grammar_rules(df):

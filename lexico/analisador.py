@@ -79,8 +79,8 @@ class Scanner():
     def __init__(self):
         self.name = "scanner"
         self.pos = 0
-        self.linha = 0
-        self.coluna = 0
+        self.linha = 1
+        self.coluna = 1
         self.tabela_de_simbolos = palavras_reservadas
     
     def get_token(self, lexema, state):

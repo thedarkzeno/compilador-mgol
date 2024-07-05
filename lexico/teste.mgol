@@ -1,7 +1,7 @@
 inicio
 varinicio
 literal A;
-inteiro B, D, E;
+inteiro B, D E;
 real C;
 varfim;
 escreva "Digite B:";
@@ -21,7 +21,7 @@ B<-B+3;
 D<-B;
 C<-5.0;
  repita (B<5)
- C<-B+2;
+ C<-B+2
  escreva C;
  B<-B+1;
  fimrepita

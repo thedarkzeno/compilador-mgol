@@ -19,8 +19,8 @@ if __name__ == "__main__":
     
     # Carregar a gramática a partir de um arquivo CSV
     df = pd.read_csv('./sintatico/gramatica.csv')
-    lr_table=pd.read_csv('./sintatico/lr_table.csv')
-    print(lr_table)
+    action_table=pd.read_csv('./sintatico/action.csv')
+    print(action_table)
     goto_table =pd.read_csv('./sintatico/goto.csv') 
     closure_table = pd.read_csv('./sintatico/estados_closure.csv')
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # print_slr_table(action_table, goto_table)
 
     scanner = Scanner()
-    parser = Parser(lr_table, goto_table, df, scanner)
+    parser = Parser(action_table, goto_table, df, scanner)
     
     with open("lexico/teste.mgol") as file:
         codigo = file.read()
