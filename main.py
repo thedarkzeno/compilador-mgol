@@ -24,7 +24,7 @@ if __name__ == "__main__":
     goto_table =pd.read_csv('./sintatico/goto.csv') 
     closure_table = pd.read_csv('./sintatico/estados_closure.csv')
 
-    rules = get_grammar_rules(df)
+    # rules = get_grammar_rules(df)
     # first = compute_first(rules)
     # follow = compute_follow(rules, first)
     
