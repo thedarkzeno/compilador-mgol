@@ -1,40 +1,18 @@
 from lexico import Scanner
 from sintatico import *
-# scanner = Scanner()
 
-# with open("lexico/teste.mgol") as file:
-#     codigo = file.read()
-
-# while True:
-#     token = scanner.scanner(codigo)
-    
-#     if token.classe == "EOF":
-#         break
-    
-#     print(token)
-
-# Exemplo de uso:
 if __name__ == "__main__":
     import pandas as pd
     
-    # Carregar a gramática a partir de um arquivo CSV
-    df = pd.read_csv('./sintatico/gramatica.csv')
-    action_table=pd.read_csv('./sintatico/action.csv')
-    print(action_table)
-    goto_table =pd.read_csv('./sintatico/goto.csv') 
-    closure_table = pd.read_csv('./sintatico/estados_closure.csv')
 
-    # rules = get_grammar_rules(df)
-    # first = compute_first(rules)
-    # follow = compute_follow(rules, first)
-    
-    # states, transitions = build_lr0_automaton(rules)
-    # print_automaton(states, transitions)
-    # action_table, goto_table = build_slr_table(states, transitions, rules, first, follow)
-    # print_slr_table(action_table, goto_table)
+    gramatica = pd.read_csv('./sintatico/gramatica.csv')
+    action_table=pd.read_csv('./sintatico/action.csv')
+    goto_table =pd.read_csv('./sintatico/goto.csv') 
+
+
 
     scanner = Scanner()
-    parser = Parser(action_table, goto_table, df, scanner)
+    parser = Parser(action_table, goto_table, gramatica, scanner)
     
     with open("lexico/teste.mgol") as file:
         codigo = file.read()

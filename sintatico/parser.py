@@ -13,52 +13,48 @@ class Parser:
 
 
     def parse(self, codigo):
-        token = self.scanner.scanner(codigo)  # (1) Primeiro símbolo de w$
-        # print("token", token)
-        while True:  # (2) Repita indefinidamente
+        token = self.scanner.scanner(codigo)  
+        while True:
             if token.classe == "EOF":
                 token.classe = "$"
             if token.classe == "ERRO":
-                # self.error_recovery("ERRO")
                 return
-            state = self.stack[-1]  # (3) Estado no topo da pilha
+            state = self.stack[-1]  
             action = self.action_table[token.classe][state]
-            # print(token.lexema, token.classe, "state", state, "action", action)
-            # print(token)
-            # print(state)
-            # print(action)
+
             if action is None or pd.isna(action):
                 self.hold_token = token
                 token = self.error_recovery(action, token, codigo)
                 continue
-            elif action.startswith('s'):  # (4) ACTION[s, a] = shift t
+            elif action.startswith('s'):  
                 next_state = int("".join(action.split("s")[1:]))
-                self.stack.append(token)  # (5) Empilha t na pilha
+                self.stack.append(token)  
                 self.stack.append(next_state)
                 if self.hold_token != None:
                     token = self.hold_token
                     self.hold_token = None
                 else:
-                    token = self.scanner.scanner(codigo)  # (6) Próximo símbolo da entrada
-            elif action.startswith('r'):  # (7) ACTION[s, a] = reduce A -> β
+                    token = self.scanner.scanner(codigo)
+                print(f"Shift: {state} -> {next_state}")
+            elif action.startswith('r'):  
                 production = self.gramatica["regra"][int("".join(action.split("r")[1:]))]
                 lhs = production.split()[0].strip()
-                rhs = production.split()[2:]#.strip().split()
-                # print("token", token)
-                for _ in range(len(rhs)*2):  # (8) Desempilha símbolos |β| da pilha
+                rhs = production.split()[2:]
+               
+                for _ in range(len(rhs)*2):
                     self.stack.pop()
                 
-                state = self.stack[-1]  # (9) Estado t no topo da pilha
+                state = self.stack[-1]
                 next_state = self.goto_table[self.goto_table["goto"]==f"({state}, {lhs})"]["estado"].to_list()[0]
                 self.stack.append(lhs)
-                self.stack.append(next_state)  # (10) Empilha GOTO[t, A] na pilha
-                print(f"Reducing by: {lhs} -> {' '.join(rhs)}")  # (11) Imprime a produção A -> β
-            elif action == 'acc':  # (12) ACTION[s, a] = accept
+                self.stack.append(next_state)
+                print(f"Reducing by: {lhs} -> {' '.join(rhs)}")
+            elif action == 'acc':
                 print("Accepted")
                 return
             else:
                 self.hold_token = token
-                token = self.error_recovery(action, token, codigo)  # (13) Recuperação de erro
+                token = self.error_recovery(action, token, codigo)
                 continue
     def panic_mode(self, token, codigo):
         while token.classe not in self.sync_tokens:
