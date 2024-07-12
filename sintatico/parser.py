@@ -8,7 +8,6 @@ class Parser:
         self.gramatica = gramatica
         self.scanner = scanner
         self.stack = [0]
-        self.sync_tokens = ["pt_v", "fc_p", "EOF"]
         self.hold_token = None
 
 
@@ -24,7 +23,9 @@ class Parser:
 
             if action is None or pd.isna(action):
                 self.hold_token = token
-                token = self.error_recovery(action, token, codigo)
+                token, use_hold_token = self.error_recovery(action, token, codigo)
+                if use_hold_token == False:
+                    self.hold_token = None
                 continue
             elif action.startswith('s'):  
                 next_state = int("".join(action.split("s")[1:]))
@@ -54,44 +55,101 @@ class Parser:
                 return
             else:
                 self.hold_token = token
-                token = self.error_recovery(action, token, codigo)
+                token, use_hold_token = self.error_recovery(action, token, codigo)
+                if use_hold_token == False:
+                    self.hold_token = None
                 continue
-    def panic_mode(self, token, codigo):
-        while token.classe not in self.sync_tokens:
+    
+    def panic_mode(self, token: Token, codigo):
+        print("Entrando em modo pânico...")
+        missingSymbols = []
+        state = self.stack[-1]
+
+
+        for k,v in self.action_table[self.action_table["estado"] == state].items():
+            value = str(self.action_table[self.action_table["estado"] == state][k].fillna("erro").tolist()[0])
+            if "erro" not in value:
+                missingSymbols.append(k)
+
+        print(f"Ignorando Token:", token)
+        while token.classe not in missingSymbols:
             token = self.scanner.scanner(codigo)
-            print(token.lexema)
+            if token.classe not in missingSymbols:
+                print(f"Ignorando Token:", token)
+            if token.classe == "EOF":
+                return Token(classe="$", lexema="EOF", tipo="Nulo")
+        print(f"Recuperação com token de sincronização: {token.lexema}")
         return token
     
-    def check_missing_tokens(self, token, codigo):
-        stack_contents = [item.lexema if hasattr(item, 'classe') else item for item in self.stack]
-        open_parens = stack_contents.count("(")
-        close_parens = stack_contents.count(")")
+    def check_missing_tokens(self, token: Token, codigo):
+        missingSymbols = []
+        state = self.stack[-1]
 
-        if open_parens > close_parens:
-            print('Recuperação de erro', 'adicionando ")"')
-            token = Token(classe="fc_p", lexema=")", tipo="Nulo")
-        else:
+        for k,v in self.action_table[self.action_table["estado"] == state].items():
+            value = str(self.action_table[self.action_table["estado"] == state][k].fillna("erro").tolist()[0])
+            if "erro" not in value:
+                missingSymbols.append(k)
+
+        if "vir" in missingSymbols:
+            if token.classe == "id":
+                print('Recuperação de erro', 'adicionando ","')
+                return Token(classe="vir", lexema=",", tipo="Nulo")
+        
+        if "fc_p" in missingSymbols:
+            stack_contents = [item.lexema if hasattr(item, 'classe') else item for item in self.stack]
+            open_parens = stack_contents.count("(")
+            close_parens = stack_contents.count(")")
+            if open_parens > close_parens:
+                print('Recuperação de erro', 'adicionando ")"')
+                return Token(classe="fc_p", lexema=")", tipo="Nulo")
+        
+        if "opm" in missingSymbols:
+            if token.classe == "id" or token.classe == "num":
+                print('Recuperação de erro', 'adicionando "+"')
+                return Token(classe="opm", lexema="+", tipo="Nulo")
+        
+        if "pt_v" in missingSymbols:
             print('Recuperação de erro', 'adicionando ";"')
             token = Token(classe="pt_v", lexema=";", tipo="Nulo")
         
+        if "varfim" in missingSymbols:
+            print('Recuperação de erro', 'adicionando "varfim"')
+            token = Token("varfim", "varfim", "varfim")
+
+        if "fimse" in missingSymbols:
+            print('Recuperação de erro', 'adicionando "fimse"')
+            token = Token("fimse", "fimse", "fimse")
+
+        if "fim" in missingSymbols:
+            print('Recuperação de erro', 'adicionando "fim"')
+            token = Token("fim", "fim", "fim")
+
         return token
 
 
 
-    def error_recovery(self, action, token, codigo):
+    def error_recovery(self, action, token: Token, codigo):
+        lines = codigo.split('\n')
         print("____________________________\n")
         print("-------Erro Sintático-------")
 
         print("** na linha:", self.scanner.linha, "e coluna:", self.scanner.coluna,"**")
-        print(self.stack[-2])
+        
+        print(lines[self.scanner.linha-1])
+        print(" "*max(0, int(self.scanner.coluna)-2), "ˆ")
+        print(" "*max(0, int(self.scanner.coluna)-2), "|")
+
         print("____________________________\n")
         if action == "ERRO":
             print("Erro Léxico")
-        elif action == "erro_vir":
-            print('Recuperação de erro', 'adicionando ","')
-            return Token(classe="vir", lexema=",", tipo="Nulo")
-        elif action == "erro_ptv" or action == "erro_exp" or action == "erro_fcp":
-            return self.check_missing_tokens(token, codigo)
-        else:
-            return self.panic_mode(token, codigo)
+        prev_token = token
+        use_hold_token = True
+        token = self.check_missing_tokens(token, codigo)
+        if token == prev_token:
+            token = self.panic_mode(token, codigo)
+            use_hold_token = False
+        if token == prev_token:
+            print("Não foi possível recuperar o erro!")
+        print("____________________________\n")
+        return token, use_hold_token
 

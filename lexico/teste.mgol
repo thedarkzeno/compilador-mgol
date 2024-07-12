@@ -1,8 +1,9 @@
 inicio
 varinicio
 literal A;
+{aqui declaramos variáveis}
 inteiro B, D E;
-real C;
+real real ; inteiro C;
 varfim;
 escreva "Digite B:";
 leia B;
@@ -21,7 +22,7 @@ B<-B+3;
 D<-B;
 C<-5.0;
  repita (B<5)
- C<-B+2
+ C<-B+2;
  escreva C;
  B<-B+1;
  fimrepita

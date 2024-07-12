@@ -1,13 +1,13 @@
 from lexico import Scanner
 from sintatico import *
+import pandas as pd
 
 if __name__ == "__main__":
-    import pandas as pd
     
 
     gramatica = pd.read_csv('./sintatico/gramatica.csv')
-    action_table=pd.read_csv('./sintatico/action.csv')
-    goto_table =pd.read_csv('./sintatico/goto.csv') 
+    action_table = pd.read_csv('./sintatico/action.csv')
+    goto_table = pd.read_csv('./sintatico/goto.csv') 
 
 
 

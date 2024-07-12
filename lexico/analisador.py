@@ -8,6 +8,11 @@ class Token:
 
     def __str__(self):
         return f"Classe: {self.classe}, Lexema: '{self.lexema}', Tipo: {self.tipo}"
+    
+    def __eq__(self, other):
+        if isinstance(other, Token):
+            return self.classe == other.classe and self.lexema == other.lexema and self.tipo == other.tipo
+        return False
 
 palavras_reservadas = {
     "inicio": Token("inicio", "inicio", "inicio"),
@@ -82,8 +87,9 @@ class Scanner():
         self.linha = 1
         self.coluna = 1
         self.tabela_de_simbolos = palavras_reservadas
+        self.ended = False
     
-    def get_token(self, lexema, state):
+    def get_token(self, lexema, state) -> Token:
         classe = get_classe(state)
         tipo = get_tipo(state)
         token = self.tabela_de_simbolos.get(lexema, Token(classe, lexema, tipo))
@@ -92,6 +98,8 @@ class Scanner():
         return token
     
     def scanner(self, codigo_fonte):
+        if self.ended == True:
+            return Token("EOF", "EOF", "EOF")
         def ler_caractere():
             if self.pos < len(codigo_fonte):
                 c = codigo_fonte[self.pos]
@@ -133,6 +141,8 @@ class Scanner():
                         self.coluna -= 1
                         
                         token = self.get_token(lexema, state)
+                        if token.classe == "Comentario":
+                            break
                         return token
 
                 lexema = new_lexema
@@ -140,10 +150,11 @@ class Scanner():
             accepts, transitioned, state = dfa.accepts(lexema)
             if accepts:
                 token = self.get_token(lexema, state)
-                return token
+                if token.classe != "Comentario":
+                    return token
             else:
                 print(f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}")
                 return Token("ERRO", lexema, "Nulo")
-
+        self.ended = True
         return Token("EOF", "EOF", "EOF")
 
