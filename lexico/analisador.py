@@ -1,5 +1,6 @@
 from .dfa import *
 
+
 class Token:
     def __init__(self, classe, lexema, tipo):
         self.classe = classe
@@ -8,11 +9,16 @@ class Token:
 
     def __str__(self):
         return f"Classe: {self.classe}, Lexema: '{self.lexema}', Tipo: {self.tipo}"
-    
+
     def __eq__(self, other):
         if isinstance(other, Token):
-            return self.classe == other.classe and self.lexema == other.lexema and self.tipo == other.tipo
+            return (
+                self.classe == other.classe
+                and self.lexema == other.lexema
+                and self.tipo == other.tipo
+            )
         return False
+
 
 palavras_reservadas = {
     "inicio": Token("inicio", "inicio", "inicio"),
@@ -67,11 +73,17 @@ def get_classe(state):
 
     return classe
 
+
 def get_tipo(state):
     tipo = "Nulo"
     if state.name == stateNum:
         tipo = "inteiro"
-    elif state.name in [stateNumPonto, stateNumExpoente1, stateNumExpoente2, stateNumExpoenteFinal]:
+    elif state.name in [
+        stateNumPonto,
+        stateNumExpoente1,
+        stateNumExpoente2,
+        stateNumExpoenteFinal,
+    ]:
         tipo = "real"
     elif state.name == stateLiteralFinal:
         tipo = "lit"
@@ -80,7 +92,7 @@ def get_tipo(state):
     return tipo
 
 
-class Scanner():
+class Scanner:
     def __init__(self):
         self.name = "scanner"
         self.pos = 0
@@ -88,7 +100,7 @@ class Scanner():
         self.coluna = 1
         self.tabela_de_simbolos = palavras_reservadas
         self.ended = False
-    
+
     def get_token(self, lexema, state) -> Token:
         classe = get_classe(state)
         tipo = get_tipo(state)
@@ -96,10 +108,11 @@ class Scanner():
         if token.classe == "id":
             self.tabela_de_simbolos[token.lexema] = token
         return token
-    
+
     def scanner(self, codigo_fonte):
         if self.ended == True:
             return Token("EOF", "EOF", "EOF")
+
         def ler_caractere():
             if self.pos < len(codigo_fonte):
                 c = codigo_fonte[self.pos]
@@ -115,46 +128,48 @@ class Scanner():
                 break
 
             if c.isspace():
-                if c == '\n':
+                if c == "\n":
                     self.linha += 1
                     self.coluna = 1
                 continue
 
             lexema = c
-            
+
             accepts, transitioned, state = dfa.accepts(lexema)
-            
+
             if not accepts:
                 if transitioned == False:
-                    print(f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}")
+                    print(
+                        f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}"
+                    )
                     return Token("ERRO", lexema, "Nulo")
 
-            
-            while (c := ler_caractere()):
-                new_lexema = lexema + c                
-                
+            while c := ler_caractere():
+                new_lexema = lexema + c
+
                 accepts, transitioned, state = dfa.accepts(new_lexema)
 
                 if not accepts:
                     if transitioned == False:
                         self.pos -= 1
                         self.coluna -= 1
-                        
+
                         token = self.get_token(lexema, state)
                         if token.classe == "Comentario":
                             break
                         return token
 
                 lexema = new_lexema
-            
+
             accepts, transitioned, state = dfa.accepts(lexema)
             if accepts:
                 token = self.get_token(lexema, state)
                 if token.classe != "Comentario":
                     return token
             else:
-                print(f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}")
+                print(
+                    f"ERRO LÉXICO: Sequência de caracteres inválida na linguagem: '{lexema}', linha {self.linha}, coluna {self.coluna}"
+                )
                 return Token("ERRO", lexema, "Nulo")
         self.ended = True
         return Token("EOF", "EOF", "EOF")
-

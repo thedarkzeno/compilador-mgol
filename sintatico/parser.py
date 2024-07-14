@@ -1,6 +1,7 @@
 from lexico import Token
 import pandas as pd
 
+
 class Parser:
     def __init__(self, action_table, goto_table, gramatica, scanner):
         self.action_table = action_table
@@ -10,15 +11,14 @@ class Parser:
         self.stack = [0]
         self.hold_token = None
 
-
     def parse(self, codigo):
-        token = self.scanner.scanner(codigo)  
+        token = self.scanner.scanner(codigo)
         while True:
             if token.classe == "EOF":
                 token.classe = "$"
             if token.classe == "ERRO":
                 return
-            state = self.stack[-1]  
+            state = self.stack[-1]
             action = self.action_table[token.classe][state]
 
             if action is None or pd.isna(action):
@@ -27,9 +27,9 @@ class Parser:
                 if use_hold_token == False:
                     self.hold_token = None
                 continue
-            elif action.startswith('s'):  
+            elif action.startswith("s"):
                 next_state = int("".join(action.split("s")[1:]))
-                self.stack.append(token)  
+                self.stack.append(token)
                 self.stack.append(next_state)
                 if self.hold_token != None:
                     token = self.hold_token
@@ -37,20 +37,24 @@ class Parser:
                 else:
                     token = self.scanner.scanner(codigo)
                 print(f"Shift: {state} -> {next_state}")
-            elif action.startswith('r'):  
-                production = self.gramatica["regra"][int("".join(action.split("r")[1:]))]
+            elif action.startswith("r"):
+                production = self.gramatica["regra"][
+                    int("".join(action.split("r")[1:]))
+                ]
                 lhs = production.split()[0].strip()
                 rhs = production.split()[2:]
-               
-                for _ in range(len(rhs)*2):
+
+                for _ in range(len(rhs) * 2):
                     self.stack.pop()
-                
+
                 state = self.stack[-1]
-                next_state = self.goto_table[self.goto_table["goto"]==f"({state}, {lhs})"]["estado"].to_list()[0]
+                next_state = self.goto_table[
+                    self.goto_table["goto"] == f"({state}, {lhs})"
+                ]["estado"].to_list()[0]
                 self.stack.append(lhs)
                 self.stack.append(next_state)
                 print(f"Reducing by: {lhs} -> {' '.join(rhs)}")
-            elif action == 'acc':
+            elif action == "acc":
                 print("Accepted")
                 return
             else:
@@ -59,15 +63,18 @@ class Parser:
                 if use_hold_token == False:
                     self.hold_token = None
                 continue
-    
+
     def panic_mode(self, token: Token, codigo):
         print("Entrando em modo pânico...")
         missingSymbols = []
         state = self.stack[-1]
 
-
-        for k,v in self.action_table[self.action_table["estado"] == state].items():
-            value = str(self.action_table[self.action_table["estado"] == state][k].fillna("erro").tolist()[0])
+        for k, v in self.action_table[self.action_table["estado"] == state].items():
+            value = str(
+                self.action_table[self.action_table["estado"] == state][k]
+                .fillna("erro")
+                .tolist()[0]
+            )
             if "erro" not in value:
                 missingSymbols.append(k)
 
@@ -80,64 +87,70 @@ class Parser:
                 return Token(classe="$", lexema="EOF", tipo="Nulo")
         print(f"Recuperação com token de sincronização: {token.lexema}")
         return token
-    
+
     def check_missing_tokens(self, token: Token, codigo):
         missingSymbols = []
         state = self.stack[-1]
 
-        for k,v in self.action_table[self.action_table["estado"] == state].items():
-            value = str(self.action_table[self.action_table["estado"] == state][k].fillna("erro").tolist()[0])
+        for k, v in self.action_table[self.action_table["estado"] == state].items():
+            value = str(
+                self.action_table[self.action_table["estado"] == state][k]
+                .fillna("erro")
+                .tolist()[0]
+            )
             if "erro" not in value:
                 missingSymbols.append(k)
 
         if "vir" in missingSymbols:
             if token.classe == "id":
-                print('Recuperação de erro', 'adicionando ","')
+                print("Recuperação de erro", 'adicionando ","')
                 return Token(classe="vir", lexema=",", tipo="Nulo")
-        
+
         if "fc_p" in missingSymbols:
-            stack_contents = [item.lexema if hasattr(item, 'classe') else item for item in self.stack]
+            stack_contents = [
+                item.lexema if hasattr(item, "classe") else item for item in self.stack
+            ]
             open_parens = stack_contents.count("(")
             close_parens = stack_contents.count(")")
             if open_parens > close_parens:
-                print('Recuperação de erro', 'adicionando ")"')
+                print("Recuperação de erro", 'adicionando ")"')
                 return Token(classe="fc_p", lexema=")", tipo="Nulo")
-        
+
         if "opm" in missingSymbols:
             if token.classe == "id" or token.classe == "num":
-                print('Recuperação de erro', 'adicionando "+"')
+                print("Recuperação de erro", 'adicionando "+"')
                 return Token(classe="opm", lexema="+", tipo="Nulo")
-        
+
         if "pt_v" in missingSymbols:
-            print('Recuperação de erro', 'adicionando ";"')
+            print("Recuperação de erro", 'adicionando ";"')
             token = Token(classe="pt_v", lexema=";", tipo="Nulo")
-        
+
         if "varfim" in missingSymbols:
-            print('Recuperação de erro', 'adicionando "varfim"')
+            print("Recuperação de erro", 'adicionando "varfim"')
             token = Token("varfim", "varfim", "varfim")
 
         if "fimse" in missingSymbols:
-            print('Recuperação de erro', 'adicionando "fimse"')
+            print("Recuperação de erro", 'adicionando "fimse"')
             token = Token("fimse", "fimse", "fimse")
 
         if "fim" in missingSymbols:
-            print('Recuperação de erro', 'adicionando "fim"')
+            print("Recuperação de erro", 'adicionando "fim"')
             token = Token("fim", "fim", "fim")
 
         return token
 
-
-
     def error_recovery(self, action, token: Token, codigo):
-        lines = codigo.split('\n')
+        lines = codigo.split("\n")
         print("____________________________\n")
         print("-------Erro Sintático-------")
 
-        print("** na linha:", self.scanner.linha, "e coluna:", self.scanner.coluna,"**")
-        
-        print(lines[self.scanner.linha-1])
-        print(" "*max(0, int(self.scanner.coluna)-2), "ˆ")
-        print(" "*max(0, int(self.scanner.coluna)-2), "|")
+        print(
+            "** na linha:", self.scanner.linha, "e coluna:", self.scanner.coluna, "**"
+        )
+
+        print(lines[self.scanner.linha - 1])
+        print(" " * max(0, int(self.scanner.coluna) - 2), "ˆ")
+        print(" " * max(0, int(self.scanner.coluna) - 2), "|")
 
         print("____________________________\n")
         if action == "ERRO":
@@ -152,4 +165,3 @@ class Parser:
             print("Não foi possível recuperar o erro!")
         print("____________________________\n")
         return token, use_hold_token
-
