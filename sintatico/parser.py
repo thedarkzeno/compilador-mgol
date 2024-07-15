@@ -66,7 +66,7 @@ class Parser:
 
     def panic_mode(self, token: Token, codigo):
         print("Entrando em modo pânico...")
-        missingSymbols = []
+        candidateSymbols = []
         state = self.stack[-1]
 
         for k, v in self.action_table[self.action_table["estado"] == state].items():
@@ -76,12 +76,12 @@ class Parser:
                 .tolist()[0]
             )
             if "erro" not in value:
-                missingSymbols.append(k)
+                candidateSymbols.append(k)
 
         print(f"Ignorando Token:", token)
-        while token.classe not in missingSymbols:
+        while token.classe not in candidateSymbols:
             token = self.scanner.scanner(codigo)
-            if token.classe not in missingSymbols:
+            if token.classe not in candidateSymbols:
                 print(f"Ignorando Token:", token)
             if token.classe == "EOF":
                 return Token(classe="$", lexema="EOF", tipo="Nulo")
@@ -89,7 +89,7 @@ class Parser:
         return token
 
     def check_missing_tokens(self, token: Token, codigo):
-        missingSymbols = []
+        candidateSymbols = []
         state = self.stack[-1]
 
         for k, v in self.action_table[self.action_table["estado"] == state].items():
@@ -99,14 +99,14 @@ class Parser:
                 .tolist()[0]
             )
             if "erro" not in value:
-                missingSymbols.append(k)
+                candidateSymbols.append(k)
 
-        if "vir" in missingSymbols:
+        if "vir" in candidateSymbols:
             if token.classe == "id":
                 print("Recuperação de erro", 'adicionando ","')
                 return Token(classe="vir", lexema=",", tipo="Nulo")
 
-        if "fc_p" in missingSymbols:
+        if "fc_p" in candidateSymbols:
             stack_contents = [
                 item.lexema if hasattr(item, "classe") else item for item in self.stack
             ]
@@ -116,26 +116,42 @@ class Parser:
                 print("Recuperação de erro", 'adicionando ")"')
                 return Token(classe="fc_p", lexema=")", tipo="Nulo")
 
-        if "opm" in missingSymbols:
+        if "opm" in candidateSymbols:
             if token.classe == "id" or token.classe == "num":
                 print("Recuperação de erro", 'adicionando "+"')
                 return Token(classe="opm", lexema="+", tipo="Nulo")
 
-        if "pt_v" in missingSymbols:
+        if "pt_v" in candidateSymbols:
             print("Recuperação de erro", 'adicionando ";"')
             token = Token(classe="pt_v", lexema=";", tipo="Nulo")
 
-        if "varfim" in missingSymbols:
+        if "inicio" in candidateSymbols:
+            print("Recuperação de erro", 'adicionando "inicio"')
+            token = Token("inicio", "inicio", "inicio")
+            
+        if "varinicio" in candidateSymbols:
+            print("Recuperação de erro", 'adicionando "varinicio"')
+            token = Token("varinicio", "varinicio", "varinicio")
+            
+        if "varfim" in candidateSymbols:
             print("Recuperação de erro", 'adicionando "varfim"')
             token = Token("varfim", "varfim", "varfim")
 
-        if "fimse" in missingSymbols:
+        if "fimse" in candidateSymbols:
             print("Recuperação de erro", 'adicionando "fimse"')
             token = Token("fimse", "fimse", "fimse")
 
-        if "fim" in missingSymbols:
+        if "fim" in candidateSymbols:
             print("Recuperação de erro", 'adicionando "fim"')
             token = Token("fim", "fim", "fim")
+        
+        if "entao" in candidateSymbols:
+            print("Recuperação de erro", 'adicionando "entao"')
+            token = Token("entao", "entao", "entao")
+        
+        if "ab_p" in candidateSymbols:
+            print("Recuperação de erro", 'adicionando "("')
+            token = Token("ab_p", "ab_p", "ab_p")
 
         return token
 
