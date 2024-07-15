@@ -151,7 +151,7 @@ class Parser:
         
         if "ab_p" in candidateSymbols:
             print("Recuperação de erro", 'adicionando "("')
-            token = Token("ab_p", "ab_p", "ab_p")
+            token = Token("ab_p", "(", "Nulo")
 
         return token
 
