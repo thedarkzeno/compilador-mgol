@@ -1,40 +1,40 @@
-id,regra
-0,P' → P
-1,P → inicio V A
-2,V → varinicio LV
-3,LV → D LV
-4,LV → varfim pt_v
-5,D → TIPO L pt_v
-6,L → id vir L
-7,L → id
-8,TIPO → inteiro
-9,TIPO → real
-10,TIPO → literal
-11,A → ES A
-12,ES → leia id pt_v
-13,ES → escreva ARG pt_v
-14,ARG → lit
-15,ARG → num
-16,ARG → id
-17,A → CMD A
-18,CMD → id rcb LD pt_v
-19,LD → OPRD opm OPRD
-20,LD → OPRD
-21,OPRD → id
-22,OPRD → num
-23,A → COND A
-24,COND → CAB CP
-25,CAB → se ab_p EXP_R fc_p então
-26,EXP_R → OPRD opr OPRD
-27,CP → ES CP
-28,CP → CMD CP
-29,CP → COND CP
-30,CP → fimse
-31,A → R A
-32,R → CABR CPR
-33,CABR → repita ab_p EXP_R fc_p
-34,CPR → ES CPR
-35,CPR → CMD CPR
-36,CPR → COND CPR
-37,CPR → fimrepita
-38,A → fim
+id,regra,semantica
+0,P' → P,0
+1,P → inicio V A,0
+2,V → varinicio LV,0
+3,LV → D LV,0
+4,LV → varfim pt_v,1
+5,D → TIPO L pt_v,2
+6,L → id vir L,3
+7,L → id,4
+8,TIPO → inteiro,5
+9,TIPO → real,5
+10,TIPO → literal,5
+11,A → ES A,0
+12,ES → leia id pt_v,6
+13,ES → escreva ARG pt_v,7
+14,ARG → lit,8
+15,ARG → num,8
+16,ARG → id,9
+17,A → CMD A,0
+18,CMD → id rcb LD pt_v,10
+19,LD → OPRD opm OPRD,11
+20,LD → OPRD,12
+21,OPRD → id,13
+22,OPRD → num,14
+23,A → COND A,0
+24,COND → CAB CP,15
+25,CAB → se ab_p EXP_R fc_p então,16
+26,EXP_R → OPRD opr OPRD,17
+27,CP → ES CP,0
+28,CP → CMD CP,0
+29,CP → COND CP,0
+30,CP → fimse,0
+31,A → R A,18
+32,R → CABR CPR,19
+33,CABR → repita ab_p EXP_R fc_p,20
+34,CPR → ES CPR,21
+35,CPR → CMD CPR,22
+36,CPR → COND CPR,23
+37,CPR → fimrepita,24
+38,A → fim,0

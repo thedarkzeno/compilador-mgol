@@ -1,4 +1,5 @@
 from lexico import Token
+from semantico import SemanticAnalyzer
 import pandas as pd
 
 
@@ -10,14 +11,16 @@ class Parser:
         self.scanner = scanner
         self.stack = [0]
         self.hold_token = None
+        
+        self.semantic = SemanticAnalyzer()
 
     def parse(self, codigo):
         token = self.scanner.scanner(codigo)
         while True:
             if token.classe == "EOF":
                 token.classe = "$"
-            if token.classe == "ERRO":
-                return
+            while token.classe == "ERRO":
+                token = self.scanner.scanner(codigo)
             state = self.stack[-1]
             action = self.action_table[token.classe][state]
 
@@ -36,7 +39,7 @@ class Parser:
                     self.hold_token = None
                 else:
                     token = self.scanner.scanner(codigo)
-                print(f"Shift: {state} -> {next_state}")
+                # print(f"Shift: {state} -> {next_state}")
             elif action.startswith("r"):
                 production = self.gramatica["regra"][
                     int("".join(action.split("r")[1:]))
@@ -44,6 +47,7 @@ class Parser:
                 lhs = production.split()[0].strip()
                 rhs = production.split()[2:]
 
+                previous_stack = self.stack.copy()
                 for _ in range(len(rhs) * 2):
                     self.stack.pop()
 
@@ -54,8 +58,14 @@ class Parser:
                 self.stack.append(lhs)
                 self.stack.append(next_state)
                 print(f"Reducing by: {lhs} -> {' '.join(rhs)}")
+                # print(token.lexema)
+                semantic_rule = self.gramatica["semantica"][
+                    int("".join(action.split("r")[1:]))
+                ]
+                self.semantic.semantic_action(semantic_rule, previous_stack)
             elif action == "acc":
                 print("Accepted")
+                self.semantic.write_code()
                 return
             else:
                 self.hold_token = token
@@ -101,6 +111,8 @@ class Parser:
             if "erro" not in value:
                 candidateSymbols.append(k)
 
+        print("Possiveis simbolos para corrigir erro:", candidateSymbols[1:])
+        
         if "vir" in candidateSymbols:
             if token.classe == "id":
                 print("Recuperação de erro", 'adicionando ","')
