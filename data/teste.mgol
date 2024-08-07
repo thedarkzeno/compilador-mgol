@@ -20,10 +20,12 @@ B<-B+2;
 B<-B+3;
 D<-B;
 C<-5.0;
- escreva "\nB=\n";
+ escreva "\nB=";
 escreva D;
 escreva "\n";
+escreva "\nC=";
 escreva C;
 escreva "\n";
+escreva "\nA=";
 escreva A;
 fim
