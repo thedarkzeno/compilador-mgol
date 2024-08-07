@@ -10,7 +10,8 @@ def traduz_tipo(tipo):
 
 
 class SemanticAnalyzer:
-    def __init__(self):
+    def __init__(self, scanner):
+        self.scanner = scanner
         self.symbol_table = {}
         self.filename = "PROGRAMA.c"
         self.code = []
@@ -21,13 +22,30 @@ class SemanticAnalyzer:
         self.pilha_semantica = []
         self.temp_count=0
     
+    def handle_error(self, msg=None):
+        self.error = True
+        lines = self.codigo.split("\n")
+        print("____________________________\n")
+        print("-------Erro Semântico-------")
+        if msg:
+            print(msg, "\n")
+        print(lines[self.scanner.linha - 1])
+        print(" " * max(0, int(self.scanner.coluna) - 2), "ˆ")
+        print(" " * max(0, int(self.scanner.coluna) - 2), "|")
+        print(
+            "** na linha:", self.scanner.linha, "e coluna:", self.scanner.coluna, "**"
+        )
+        
+        print("____________________________\n")
+        pass
+    
     def get_id(self, pilha_sintatica):
         pilha = list(reversed(pilha_sintatica))
         for el in pilha:
             if isinstance(el, Token) and el.classe == "id":
                 token = self.symbol_table.get(el.lexema, Token("id", el.lexema, "Nulo"))
                 if token.tipo == "Nulo":
-                    print("Erro: Variável não declarada na linha tal")
+                    self.handle_error(msg="Variável não declarada")
                     return token, True
                 return token, False
         return None, True
@@ -88,7 +106,7 @@ class SemanticAnalyzer:
         if not erro and temp.tipo == token.tipo:
             self.code.append(f"{token.lexema} = {temp.lexema};\n")
         else:
-            print("ERRO", token, temp)
+            self.handle_error(f"Tipo de {temp.lexema} != Tipo de {token.lexema}")
 
     def handle_ld(self, pilha_sintatica):
         for el in pilha_sintatica:
@@ -104,7 +122,7 @@ class SemanticAnalyzer:
             self.pilha_semantica.append(Token("temp", f"T{self.temp_count}", tipo))
             self.code.append(f"T{self.temp_count} = {opm2.lexema} {opm.lexema} {opm1.lexema};\n")
         else:
-            print("ERRO id")
+            self.handle_error()
 
     def handle_oprd_id(self, pilha_sintatica):
         token, erro = self.get_id(pilha_sintatica)
@@ -133,7 +151,7 @@ class SemanticAnalyzer:
             self.pilha_semantica.append(Token("temp", f"T{self.temp_count}", opr1.tipo))
             self.code.append(f"T{self.temp_count} = {opr1.lexema} {opr.lexema} {opr2.lexema};\n")
         else:
-            print("Erro: Operandos com tipos incompatíveis, linha e coluna")
+            self.handle_error("Operandos com tipos incompatíveis")
 
     def handle_while(self):
         exp_r = self.pilha_semantica[-1]
@@ -170,46 +188,50 @@ class SemanticAnalyzer:
                         
         
     def write_code(self):
-        def indent(level):
-            return "    " * level
+        if self.error == False:
+            def indent(level):
+                return "    " * level
 
-        indent_level = 0
-        pre_code = []
-        pre_code.append("#include<stdio.h>\n")
-        pre_code.append("typedef char literal[256];\n")
-        pre_code.append("void main(void) \n{\n")
-        
-        indent_level += 1
-        pre_code.append(indent(indent_level) + "/*----Variaveis temporarias----*/\n")
-        
-        for el in self.pilha_semantica:
-            if isinstance(el, Token):
-                if el.classe == "temp":
-                    pre_code.append(indent(indent_level) + f"{traduz_tipo(el.tipo)} {el.lexema};\n")
-        
-        pre_code.append(indent(indent_level) + "/*------------------------------*/\n")
-        
-        for key in self.symbol_table.keys():
-            pre_code.append(indent(indent_level) + traduz_tipo(self.symbol_table[key].tipo) + " " +self.symbol_table[key].lexema+";\n")
-        
-        for line in self.code:
-            if "{" in line.strip():
-                pre_code.append(indent(indent_level) + line.strip() + "\n")
-                indent_level += 1
-            elif "}" in line.strip():
-                indent_level -= 1
-                pre_code.append(indent(indent_level) + line.strip() + "\n")
-            else:
-                if line != "\n\n\n":
+            indent_level = 0
+            pre_code = []
+            pre_code.append("#include<stdio.h>\n")
+            pre_code.append("typedef char literal[256];\n")
+            pre_code.append("void main(void) \n{\n")
+            
+            indent_level += 1
+            pre_code.append(indent(indent_level) + "/*----Variaveis temporarias----*/\n")
+            
+            for el in self.pilha_semantica:
+                if isinstance(el, Token):
+                    if el.classe == "temp":
+                        pre_code.append(indent(indent_level) + f"{traduz_tipo(el.tipo)} {el.lexema};\n")
+            
+            pre_code.append(indent(indent_level) + "/*------------------------------*/\n")
+            
+            for key in self.symbol_table.keys():
+                pre_code.append(indent(indent_level) + traduz_tipo(self.symbol_table[key].tipo) + " " +self.symbol_table[key].lexema+";\n")
+            
+            for line in self.code:
+                if "{" in line.strip():
+                    pre_code.append(indent(indent_level) + line.strip() + "\n")
+                    indent_level += 1
+                elif "}" in line.strip():
+                    indent_level -= 1
                     pre_code.append(indent(indent_level) + line.strip() + "\n")
                 else:
-                    pre_code.append(line)
-        
-        indent_level -= 1
-        pre_code.append("}\n")
-        
-        with open(self.filename, "w") as file:
-            file.write("".join(pre_code))
+                    if line != "\n\n\n":
+                        pre_code.append(indent(indent_level) + line.strip() + "\n")
+                    else:
+                        pre_code.append(line)
+            
+            indent_level -= 1
+            pre_code.append("}\n")
+            
+            with open(self.filename, "w") as file:
+                file.write("".join(pre_code))
+        else:
+            print("Código não construído devido aos erros")
+    
 
              
 

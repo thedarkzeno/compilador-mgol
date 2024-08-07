@@ -12,14 +12,16 @@ class Parser:
         self.stack = [0]
         self.hold_token = None
         
-        self.semantic = SemanticAnalyzer()
+        self.semantic = SemanticAnalyzer(scanner)
 
     def parse(self, codigo):
+        self.semantic.codigo=codigo
         token = self.scanner.scanner(codigo)
         while True:
             if token.classe == "EOF":
                 token.classe = "$"
             while token.classe == "ERRO":
+                self.semantic.error=True
                 token = self.scanner.scanner(codigo)
             state = self.stack[-1]
             action = self.action_table[token.classe][state]
@@ -168,6 +170,7 @@ class Parser:
         return token
 
     def error_recovery(self, action, token: Token, codigo):
+        self.semantic.error=True
         lines = codigo.split("\n")
         print("____________________________\n")
         print("-------Erro Sintático-------")
