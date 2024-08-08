@@ -18,6 +18,7 @@ class SemanticAnalyzer:
         self.error = False
         self.current_type = None
         self.arg = None
+        self.hold_temp_line = ""
 
         self.pilha_semantica = []
         self.temp_count=0
@@ -155,10 +156,13 @@ class SemanticAnalyzer:
 
     def handle_while(self):
         exp_r = self.pilha_semantica[-1]
+        self.hold_temp_line = self.code[-1]
         self.code.append(f"while({exp_r.lexema}) {{\n")
 
     def handle_end_while(self):
+        self.code.append(self.hold_temp_line)
         self.code.append("}")
+        self.hold_temp_line = ""
 
     def semantic_action(self, rule, pilha_sintatica):
         action_map = {

@@ -21,6 +21,7 @@ B<-B+3;
 D<-B;
 C<-5.0;
  repita (B<5)
+ escreva "estou no loop";
  C<-C+2.0;
  escreva C;
  B<-B+1;
